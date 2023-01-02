@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 
 	"github.com/skykosiner/aircon-control/pkg/aircon"
 )
@@ -19,6 +20,10 @@ func main() {
 	case "cold":
 		aircon.SetHotOrCool(true)
 	default:
-		aircon.SetTemp(cmdArgs[0])
+		if strings.Contains(cmdArgs[0], "fan") {
+			aircon.SetFanRate(cmdArgs[0])
+		} else {
+			aircon.SetTemp(cmdArgs[0])
+		}
 	}
 }

@@ -71,8 +71,6 @@ func Toggle(state bool) {
 	if err != nil {
 		log.Fatal("Error toggling aircon", err)
 	}
-
-	fmt.Println(getCurrentMode())
 }
 
 func SetTemp(temp string) {
@@ -90,6 +88,25 @@ func SetHotOrCool(cool bool) {
 	}
 
 	_, err := http.Get(fmt.Sprintf("http://10.0.0.24/aircon/set_control_info?pow=1&mode=%s&stemp=%s&shum=0&f_rate=B&f_dir=3", hotOrCold[cool], getCurrentTemp()))
+
+	if err != nil {
+		log.Fatal("Error toggling aircon", err)
+	}
+}
+
+func SetFanRate(rate string) {
+	rate = strings.Split(rate, "-")[1]
+
+	fanSpeed := map[string]string{
+		"night": "B",
+		"1":     "3",
+		"2":     "4",
+		"3":     "5",
+		"4":     "6",
+		"5":     "7",
+	}
+
+	_, err := http.Get(fmt.Sprintf("http://10.0.0.24/aircon/set_control_info?pow=1&mode=%s&stemp=%s&shum=0&f_rate=%s&f_dir=3", getCurrentMode(), getCurrentTemp(), fanSpeed[rate]))
 
 	if err != nil {
 		log.Fatal("Error toggling aircon", err)
