@@ -112,3 +112,60 @@ func SetFanRate(rate string) {
 		log.Fatal("Error toggling aircon", err)
 	}
 }
+
+type StatusStruct struct {
+	temp     string
+	mode     string
+	fanSpeed string
+}
+
+func Status() {
+	var temp string
+	var mode string
+	var fanSpeed string
+
+	mapModes := map[string]string{
+		"3": "Cold",
+		"4": "Hot",
+	}
+
+	mapFanSpeed := map[string]string{
+		"B": "night",
+		"3": "1",
+		"4": "2",
+		"5": "3",
+		"6": "4",
+		"7": "5",
+	}
+
+	resp, err := http.Get("http://10.0.0.24/aircon/get_control_info")
+
+	if err != nil {
+		log.Fatal("Error setting heat", err)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	//Convert the body to type string
+	sb := string(body)
+
+	items := strings.Split(sb, ",")
+
+	for _, item := range items {
+		if strings.Contains(item, "stemp") {
+			temp = strings.Split(item, "=")[1]
+		}
+
+		if strings.Contains(item, "mode") {
+			mode = mapModes[strings.Split(item, "=")[1]]
+		}
+
+		if strings.Contains(item, "f_rate") {
+			fanSpeed = mapFanSpeed[strings.Split(item, "=")[1]]
+		}
+	}
+
+	fmt.Println(StatusStruct{temp, mode, fanSpeed})
+}

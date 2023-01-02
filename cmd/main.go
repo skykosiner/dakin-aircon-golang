@@ -19,6 +19,8 @@ func main() {
 		aircon.SetHotOrCool(false)
 	case "cold":
 		aircon.SetHotOrCool(true)
+	case "status":
+		aircon.Status()
 	default:
 		if strings.Contains(cmdArgs[0], "fan") {
 			aircon.SetFanRate(cmdArgs[0])
