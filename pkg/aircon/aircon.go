@@ -39,6 +39,23 @@ func GetOnState() bool {
 	return mapStates[onState]
 }
 
+func getCurrentState() string {
+	resp, err := http.Get("http://10.0.0.24/aircon/get_control_info")
+
+	if err != nil {
+		log.Fatal("Error setting heat", err)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	//Convert the body to type string
+	sb := string(body)
+
+	return sb
+}
+
 func getCurrentTemp() string {
 	var currentTemp string
 	resp, err := http.Get("http://10.0.0.24/aircon/get_control_info")
@@ -92,23 +109,59 @@ func getCurrentMode() string {
 }
 
 func Toggle(state bool) {
+	var mode string
+	var stemp string
+	var shum string
+	var f_rate string
+	var f_dir string
+
 	onOrOff := map[bool]string{
 		true:  "1",
 		false: "0",
 	}
 
-	_, err := http.Get(fmt.Sprintf("http://10.0.0.24/aircon/set_control_info?pow=%s&mode=4&stemp=26&shum=0&f_rate=B&f_dir=3", onOrOff[state]))
+	currentState := strings.Split(getCurrentState(), ",")
+
+	for _, value := range currentState {
+		fmt.Println(value)
+		if strings.Contains(value, "mode") {
+			mode = strings.Split(value, "=")[1]
+		}
+
+		if strings.Contains(value, "stemp") {
+			stemp = strings.Split(value, "=")[1]
+		}
+
+		if strings.Contains(value, "shum") {
+			shum = strings.Split(value, "=")[1]
+		}
+
+		if strings.Contains(value, "f_rate") {
+			f_rate = strings.Split(value, "=")[1]
+		}
+
+		if strings.Contains(value, "f_dir") {
+			f_dir = strings.Split(value, "=")[1]
+		}
+	}
+
+	url := fmt.Sprintf("http://10.0.0.24/aircon/set_control_info?pow=%s&mode=%s&stemp=%s&shum=%s&f_rate=%s&f_dir=%s", onOrOff[state], mode, stemp, shum, f_rate, f_dir)
+
+	fmt.Println(url)
+
+	_, err := http.Get(url)
 
 	if err != nil {
 		log.Fatal("Error toggling aircon", err)
 	}
+
 }
 
 func SetTemp(temp string) {
 	_, err := http.Get(fmt.Sprintf("http://10.0.0.24/aircon/set_control_info?pow=1&mode=%s&stemp=%s&shum=0&f_rate=B&f_dir=3", getCurrentMode(), temp))
 
 	if err != nil {
-		log.Fatal("Error toggling aircon", err)
+		log.Fatal("Error seting aircon temp", err)
 	}
 }
 
