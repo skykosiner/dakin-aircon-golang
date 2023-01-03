@@ -8,12 +8,28 @@ import (
 	"strings"
 )
 
+type StatusStruct struct {
+	temp     string
+	mode     string
+	fanSpeed string
+	on       string
+}
+
 type State struct {
 	Mode   string
 	Stemp  string
 	Shum   string
 	F_rate string
 	F_dir  string
+	Power  bool
+}
+
+func SendRequest(airconIp string, power string, mode string, temp string, fanRate string) {
+	_, err := http.Get(fmt.Sprintf("http://10.0.0.24/aircon/set_control_info?pow=%s&mode=%s&stemp=%s&shum=0&f_rate=%s&f_dir=3", power, mode, temp, fanRate))
+
+	if err != nil {
+		log.Fatal("Error toggling aircon", err)
+	}
 }
 
 func getCurrentStatus(airconIp string) []string {
@@ -25,11 +41,12 @@ func getCurrentStatus(airconIp string) []string {
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
+
 	if err != nil {
 		log.Fatalln(err)
 	}
-	sb := string(body)
 
+	sb := string(body)
 	return strings.Split(sb, ",")
 }
 
@@ -49,38 +66,24 @@ func GetOnState(airconIp string) bool {
 	return onState
 }
 
-func GetCurrentTemp(airconIp string) string {
-	var currentTemp string
-
-	for _, value := range getCurrentStatus(airconIp) {
-		if strings.Contains(value, "stemp") {
-			currentTemp = strings.Split(value, "=")[1]
-		}
-	}
-
-	return currentTemp
-}
-
-func GetCurrentMode(airconIp string) string {
-	var currentMode string
-
-	for _, value := range getCurrentStatus(airconIp) {
-		if strings.Contains(value, "mode") {
-			currentMode = strings.Split(value, "=")[1]
-		}
-	}
-
-	return currentMode
-}
-
 func StoreCurrentState(airconIp string) State {
+	var power bool
 	var mode string
 	var stemp string
 	var shum string
 	var f_rate string
 	var f_dir string
 
+	powerMap := map[string]bool{
+		"1": true,
+		"0": false,
+	}
+
 	for _, value := range getCurrentStatus(airconIp) {
+		if strings.Contains(value, "pow") {
+			power = powerMap[strings.Split(value, "=")[1]]
+		}
+
 		if strings.Contains(value, "mode") {
 			mode = strings.Split(value, "=")[1]
 		}
@@ -102,7 +105,53 @@ func StoreCurrentState(airconIp string) State {
 		}
 	}
 
-	finalState := State{mode, stemp, shum, f_rate, f_dir}
+	finalState := State{mode, stemp, shum, f_rate, f_dir, power}
 
 	return finalState
+}
+
+func CurrentStatus(airconIp string) {
+	var temp string
+	var mode string
+	var fanSpeed string
+	var power string
+
+	modeMap := map[string]string{
+		"3": "Cold",
+		"4": "Heat",
+	}
+
+	powerMap := map[string]string{
+		"1": "On",
+		"0": "Off",
+	}
+
+	fanMap := map[string]string{
+		"B": "Night",
+		"3": "1",
+		"4": "2",
+		"5": "3",
+		"6": "4",
+		"7": "5",
+	}
+
+	for _, value := range getCurrentStatus(airconIp) {
+		if strings.Contains(value, "stemp") {
+			temp = strings.Split(value, "=")[1]
+		}
+
+		if strings.Contains(value, "mode") {
+			mode = modeMap[strings.Split(value, "=")[1]]
+		}
+
+		if strings.Contains(value, "pow") {
+			power = powerMap[strings.Split(value, "=")[1]]
+		}
+
+		if strings.Contains(value, "f_rate") {
+			fanSpeed = fanMap[strings.Split(value, "=")[1]]
+		}
+	}
+
+	fmt.Println(StatusStruct{temp, mode, fanSpeed, power})
 }

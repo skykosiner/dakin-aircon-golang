@@ -23,7 +23,7 @@ func main() {
 	case "cold":
 		aircon.SetHotOrCool(true)
 	case "status":
-		aircon.Status()
+		utils.CurrentStatus("10.0.0.24")
 	case "conflict":
 		aircon.FixConflict()
 	default:
