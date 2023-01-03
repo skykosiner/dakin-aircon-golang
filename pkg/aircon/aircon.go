@@ -39,6 +39,23 @@ func GetOnState() bool {
 	return mapStates[onState]
 }
 
+func getCurrentStateKitchen() string {
+	resp, err := http.Get("http://10.0.0.72/aircon/get_control_info")
+
+	if err != nil {
+		log.Fatal("Error setting heat", err)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	//Convert the body to type string
+	sb := string(body)
+
+	return sb
+}
+
 func getCurrentState() string {
 	resp, err := http.Get("http://10.0.0.24/aircon/get_control_info")
 
@@ -123,7 +140,6 @@ func Toggle(state bool) {
 	currentState := strings.Split(getCurrentState(), ",")
 
 	for _, value := range currentState {
-		fmt.Println(value)
 		if strings.Contains(value, "mode") {
 			mode = strings.Split(value, "=")[1]
 		}
@@ -146,9 +162,6 @@ func Toggle(state bool) {
 	}
 
 	url := fmt.Sprintf("http://10.0.0.24/aircon/set_control_info?pow=%s&mode=%s&stemp=%s&shum=%s&f_rate=%s&f_dir=%s", onOrOff[state], mode, stemp, shum, f_rate, f_dir)
-
-	fmt.Println(url)
-
 	_, err := http.Get(url)
 
 	if err != nil {
@@ -263,4 +276,44 @@ func Status() {
 	}
 
 	fmt.Println(StatusStruct{temp, mode, fanSpeed, onOrOff})
+}
+
+func FixConflict() {
+	// Turn off kitchen aircon
+	var mode string
+	var stemp string
+	var shum string
+	var f_rate string
+	var f_dir string
+
+	currentState := strings.Split(getCurrentStateKitchen(), ",")
+
+	for _, value := range currentState {
+		if strings.Contains(value, "mode") {
+			mode = strings.Split(value, "=")[1]
+		}
+
+		if strings.Contains(value, "stemp") {
+			stemp = strings.Split(value, "=")[1]
+		}
+
+		if strings.Contains(value, "shum") {
+			shum = strings.Split(value, "=")[1]
+		}
+
+		if strings.Contains(value, "f_rate") {
+			f_rate = strings.Split(value, "=")[1]
+		}
+
+		if strings.Contains(value, "f_dir") {
+			f_dir = strings.Split(value, "=")[1]
+		}
+	}
+
+	url := fmt.Sprintf("http://10.0.0.72/aircon/set_control_info?pow=0&mode=%s&stemp=%s&shum=%s&f_rate=%s&f_dir=%s", mode, stemp, shum, f_rate, f_dir)
+	_, err := http.Get(url)
+
+	if err != nil {
+		log.Fatal("Error toggling aircon", err)
+	}
 }
