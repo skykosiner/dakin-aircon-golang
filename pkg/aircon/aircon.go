@@ -8,8 +8,39 @@ import (
 	"strings"
 )
 
+func GetOnState() bool {
+	mapStates := map[string]bool{
+		"1": true,
+		"0": false,
+	}
+
+	var onState string
+	resp, err := http.Get("http://10.0.0.24/aircon/get_control_info")
+
+	if err != nil {
+		log.Fatal("Error setting heat", err)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	//Convert the body to type string
+	sb := string(body)
+
+	items := strings.Split(sb, ",")
+
+	for _, item := range items {
+		if strings.Contains(item, "pow") {
+			onState = strings.Split(item, "=")[1]
+		}
+	}
+
+	return mapStates[onState]
+}
+
 func getCurrentTemp() string {
-	var modeNum string
+	var currentTemp string
 	resp, err := http.Get("http://10.0.0.24/aircon/get_control_info")
 
 	if err != nil {
@@ -27,11 +58,11 @@ func getCurrentTemp() string {
 
 	for _, item := range items {
 		if strings.Contains(item, "stemp") {
-			modeNum = strings.Split(item, "=")[1]
+			currentTemp = strings.Split(item, "=")[1]
 		}
 	}
 
-	return modeNum
+	return currentTemp
 }
 
 func getCurrentMode() string {
@@ -117,12 +148,19 @@ type StatusStruct struct {
 	temp     string
 	mode     string
 	fanSpeed string
+	on       string
 }
 
 func Status() {
 	var temp string
 	var mode string
 	var fanSpeed string
+	var onOrOff string
+
+	mapOnOrOfff := map[string]string{
+		"0": "off",
+		"1": "on",
+	}
 
 	mapModes := map[string]string{
 		"3": "Cold",
@@ -165,7 +203,11 @@ func Status() {
 		if strings.Contains(item, "f_rate") {
 			fanSpeed = mapFanSpeed[strings.Split(item, "=")[1]]
 		}
+
+		if strings.Contains(item, "pow") {
+			onOrOff = mapOnOrOfff[strings.Split(item, "=")[1]]
+		}
 	}
 
-	fmt.Println(StatusStruct{temp, mode, fanSpeed})
+	fmt.Println(StatusStruct{temp, mode, fanSpeed, onOrOff})
 }

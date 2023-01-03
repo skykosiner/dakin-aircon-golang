@@ -11,10 +11,12 @@ func main() {
 	cmdArgs := os.Args[1:]
 
 	switch cmdArgs[0] {
-	case "on":
-		aircon.Toggle(true)
-	case "off":
-		aircon.Toggle(false)
+	case "toggle":
+		if aircon.GetOnState() {
+			aircon.Toggle(false)
+		} else {
+			aircon.Toggle(true)
+		}
 	case "hot":
 		aircon.SetHotOrCool(false)
 	case "cold":
