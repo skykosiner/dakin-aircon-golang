@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/skykosiner/aircon-control/pkg/aircon"
+	"github.com/skykosiner/aircon-control/pkg/utils"
 )
 
 func main() {
@@ -12,7 +13,7 @@ func main() {
 
 	switch cmdArgs[0] {
 	case "toggle":
-		if aircon.GetOnState() {
+		if utils.GetOnState("10.0.0.24") {
 			aircon.Toggle(false)
 		} else {
 			aircon.Toggle(true)
