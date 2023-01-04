@@ -15,7 +15,7 @@ func Toggle(state bool) {
 	currentState := utils.CurrentStatus("10.0.0.24")
 	utils.SendRequest("10.0.0.24", onOrOff[state],
 		utils.MapValuesOfState(currentState.Mode),
-		utils.MapValuesOfState(currentState.Temp),
+		currentState.Temp,
 		utils.MapValuesOfState(currentState.FanSpeed))
 }
 
@@ -34,7 +34,7 @@ func SetHotOrCool(cool bool) {
 
 	currentState := utils.CurrentStatus("10.0.0.24")
 	utils.SendRequest("10.0.0.24", "1", hotOrCold[cool],
-		utils.MapValuesOfState(currentState.Temp),
+		currentState.Temp,
 		utils.MapValuesOfState(currentState.FanSpeed))
 }
 
@@ -53,7 +53,7 @@ func SetFanRate(rate string) {
 	currentState := utils.CurrentStatus("10.0.0.24")
 	utils.SendRequest("10.0.0.24", "1",
 		utils.MapValuesOfState(currentState.Mode),
-		utils.MapValuesOfState(currentState.Temp), fanSpeed[rate])
+		currentState.Temp, fanSpeed[rate])
 }
 
 func FixConflict() {
@@ -62,13 +62,13 @@ func FixConflict() {
 	if currentState.Power == "1" {
 		utils.SendRequest("10.0.0.72", "0",
 			utils.MapValuesOfState(currentState.Mode),
-			utils.MapValuesOfState(currentState.Temp),
+			currentState.Temp,
 			utils.MapValuesOfState(currentState.FanSpeed))
 
 		// Set the other aircon downstairs to the same as the one that conflicts with mine
 		utils.SendRequest("10.0.0.54", "1",
 			utils.MapValuesOfState(currentState.Mode),
-			utils.MapValuesOfState(currentState.Temp),
+			currentState.Temp,
 			utils.MapValuesOfState(currentState.FanSpeed))
 	}
 }

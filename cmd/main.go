@@ -16,7 +16,8 @@ func main() {
 
 	switch cmdArgs[0] {
 	case "toggle":
-		if utils.CurrentStatus("10.0.0.24").Power == "1" {
+		fmt.Println(utils.CurrentStatus("10.0.0.24").Power == "On")
+		if utils.CurrentStatus("10.0.0.24").Power == "On" {
 			aircon.Toggle(false)
 		} else {
 			aircon.Toggle(true)
