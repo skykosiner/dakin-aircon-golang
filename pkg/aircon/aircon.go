@@ -12,13 +12,18 @@ func Toggle(state bool) {
 		false: "0",
 	}
 
-	currentState := utils.StoreCurrentState("10.0.0.24")
-	utils.SendRequest("10.0.0.24", onOrOff[state], currentState.Mode, currentState.Stemp, currentState.F_rate)
+	currentState := utils.CurrentStatus("10.0.0.24")
+	utils.SendRequest("10.0.0.24", onOrOff[state],
+		utils.MapValuesOfState(currentState.Mode),
+		utils.MapValuesOfState(currentState.Temp),
+		utils.MapValuesOfState(currentState.FanSpeed))
 }
 
 func SetTemp(temp string) {
-	currentState := utils.StoreCurrentState("10.0.0.24")
-	utils.SendRequest("10.0.0.24", "1", currentState.Mode, temp, currentState.F_rate)
+	currentState := utils.CurrentStatus("10.0.0.24")
+	utils.SendRequest("10.0.0.24", "1",
+		utils.MapValuesOfState(currentState.Mode), temp,
+		utils.MapValuesOfState(currentState.FanSpeed))
 }
 
 func SetHotOrCool(cool bool) {
@@ -27,8 +32,10 @@ func SetHotOrCool(cool bool) {
 		false: "4",
 	}
 
-	currentState := utils.StoreCurrentState("10.0.0.24")
-	utils.SendRequest("10.0.0.24", "1", hotOrCold[cool], currentState.Stemp, currentState.F_rate)
+	currentState := utils.CurrentStatus("10.0.0.24")
+	utils.SendRequest("10.0.0.24", "1", hotOrCold[cool],
+		utils.MapValuesOfState(currentState.Temp),
+		utils.MapValuesOfState(currentState.FanSpeed))
 }
 
 func SetFanRate(rate string) {
@@ -43,17 +50,25 @@ func SetFanRate(rate string) {
 		"5":     "7",
 	}
 
-	currentState := utils.StoreCurrentState("10.0.0.24")
-	utils.SendRequest("10.0.0.24", "1", currentState.Mode, currentState.Stemp, fanSpeed[rate])
+	currentState := utils.CurrentStatus("10.0.0.24")
+	utils.SendRequest("10.0.0.24", "1",
+		utils.MapValuesOfState(currentState.Mode),
+		utils.MapValuesOfState(currentState.Temp), fanSpeed[rate])
 }
 
 func FixConflict() {
-	currentState := utils.StoreCurrentState("10.0.0.72")
+	currentState := utils.CurrentStatus("10.0.0.72")
 
-	if currentState.Power {
-		utils.SendRequest("10.0.0.72", "0", currentState.Mode, currentState.Stemp, currentState.F_rate)
+	if currentState.Power == "1" {
+		utils.SendRequest("10.0.0.72", "0",
+			utils.MapValuesOfState(currentState.Mode),
+			utils.MapValuesOfState(currentState.Temp),
+			utils.MapValuesOfState(currentState.FanSpeed))
 
 		// Set the other aircon downstairs to the same as the one that conflicts with mine
-		utils.SendRequest("10.0.0.54", "1", currentState.Mode, currentState.Stemp, currentState.F_rate)
+		utils.SendRequest("10.0.0.54", "1",
+			utils.MapValuesOfState(currentState.Mode),
+			utils.MapValuesOfState(currentState.Temp),
+			utils.MapValuesOfState(currentState.FanSpeed))
 	}
 }
