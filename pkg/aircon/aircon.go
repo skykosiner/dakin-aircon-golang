@@ -57,18 +57,19 @@ func SetFanRate(rate string) {
 }
 
 func FixConflict() {
-	currentState := utils.CurrentStatus("10.0.0.72")
+	currentStateKitchen := utils.CurrentStatus("10.0.0.72")
+	currentStateRoom := utils.CurrentStatus("10.0.0.24")
 
-	if currentState.Power == "On" {
+	if currentStateKitchen.Power == "On" && currentStateKitchen.Mode != currentStateRoom.Mode {
 		utils.SendRequest("10.0.0.72", "0",
-			utils.MapValuesOfState(currentState.Mode),
-			currentState.Temp,
-			utils.MapValuesOfState(currentState.FanSpeed))
+			utils.MapValuesOfState(currentStateKitchen.Mode),
+			currentStateKitchen.Temp,
+			utils.MapValuesOfState(currentStateKitchen.FanSpeed))
 
 		// Set the other aircon downstairs to the same as the one that conflicts with mine
 		utils.SendRequest("10.0.0.54", "1",
-			utils.MapValuesOfState(currentState.Mode),
-			currentState.Temp,
-			utils.MapValuesOfState(currentState.FanSpeed))
+			utils.MapValuesOfState(currentStateKitchen.Mode),
+			currentStateKitchen.Temp,
+			utils.MapValuesOfState(currentStateKitchen.FanSpeed))
 	}
 }
