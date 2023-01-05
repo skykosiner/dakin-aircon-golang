@@ -21,7 +21,7 @@ func SendRequest(airconIp string, power string, mode string, temp string, fanRat
 	_, err := http.Get(fmt.Sprintf("http://%s/aircon/set_control_info?pow=%s&mode=%s&stemp=%s&shum=0&f_rate=%s&f_dir=3", airconIp, power, mode, temp, fanRate))
 
 	if err != nil {
-		log.Fatal("Error toggling aircon", err)
+		log.Fatal("Error sending aircon request", err)
 	}
 }
 
@@ -30,13 +30,13 @@ func getCurrentStatus(airconIp string) []string {
 	resp, err := http.Get(url)
 
 	if err != nil {
-		log.Fatal("Error setting heat", err)
+		log.Fatal("Error getting current aircon status", err)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalln("Error converting statsu response to string", err)
 	}
 
 	sb := string(body)
@@ -94,7 +94,7 @@ func MapValuesOfState(item string) string {
 		"Heat": "4",
 		// Power
 		"On":  "1",
-		"Off": "2",
+		"Off": "0",
 		// Fan speed
 		"Night": "B",
 		"1":     "3",

@@ -59,7 +59,7 @@ func SetFanRate(rate string) {
 func FixConflict() {
 	currentState := utils.CurrentStatus("10.0.0.72")
 
-	if currentState.Power == "1" {
+	if currentState.Power == "On" {
 		utils.SendRequest("10.0.0.72", "0",
 			utils.MapValuesOfState(currentState.Mode),
 			currentState.Temp,
