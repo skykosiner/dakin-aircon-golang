@@ -13,10 +13,10 @@ and change it in the code. My ip is set to `10.0.0.24`, but yours could be
 `192.168.1.69` and you'd want to change everywhere in the code `10.0.0.24` is
 mentioned to the ip of your air con.
 
-Once you make the changes to the code simply save your changes run `go build -o
-air con ./cmd/main.go` and move the air con executable file to a `~/.local/bin`
+Once you make the changes to the code simply save your changes run `go run
+cmd/main.go setupHelp && go run build -o aircon cmd/main.go` and move the air
+con executable file to a `~/.local/bin`
 path
-
 
 # Usage
 ```
@@ -39,4 +39,7 @@ aircon (hot or cold)
 # want to contcrol. If you run aircon conflict it will turn off that aircon so
 # that your aircon turn on. You need to make sure to change the ip address of
 # the aircon in the conflict function before Compiling
+
+# If you need help or forget the commands you can always run
+aircon help
 ```

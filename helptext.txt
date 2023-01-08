@@ -1,7 +1,7 @@
 Toggle air con on and off
 aircon toggle
 
-Set the temputure of the air con (any number between 18 - 30)
+Set the temputre of the air con (any number between 18 - 30)
 aircon 22
 
 Set one of the fan modes

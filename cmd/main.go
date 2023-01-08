@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/skykosiner/aircon-control/pkg/aircon"
+	helpinfo "github.com/skykosiner/aircon-control/pkg/helpInfo"
 	"github.com/skykosiner/aircon-control/pkg/utils"
 )
 
@@ -42,8 +43,11 @@ func main() {
 		}
 	case "conflict":
 		aircon.FixConflict()
+	case "setupHelp":
+		helpinfo.MoveHelpFile()
 	case "help":
-		bytes, err := os.ReadFile("./helptext.txt")
+		homePath := os.Getenv("HOME")
+		bytes, err := os.ReadFile(fmt.Sprintf("%s/.local/airconhelp.txt", homePath))
 
 		if err != nil {
 			log.Fatal("Error reading help file", err)
