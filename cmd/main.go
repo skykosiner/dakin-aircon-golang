@@ -54,7 +54,6 @@ func main() {
 		}
 
 		fmt.Println(string(bytes))
-
 	default:
 		if strings.Contains(cmdArgs[0], "fan") {
 			aircon.SetFanRate(cmdArgs[0])

@@ -1,6 +1,5 @@
 # What is this?
 I have air con around my house with the brand Dakin and you can use a local web
-# If
 api to control them so I wanted a way to control my air con locally on my
 computer.
 
@@ -13,10 +12,9 @@ and change it in the code. My ip is set to `10.0.0.24`, but yours could be
 `192.168.1.69` and you'd want to change everywhere in the code `10.0.0.24` is
 mentioned to the ip of your air con.
 
-Once you make the changes to the code simply save your changes run `go run
-cmd/main.go setupHelp && go run build -o aircon cmd/main.go` and move the air
-con executable file to a `~/.local/bin`
-path
+Once you make the changes to the code simply save your changes run `./build`.
+If you're having trouble running the `aircon` command it could be that
+`~/.local/bin` is not correctly added to your path. Make sure it is.
 
 # Usage
 ```

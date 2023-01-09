@@ -7,17 +7,17 @@ import (
 	"os"
 )
 
-func doesFileExist() bool {
+func fileExistis() bool {
 	path := fmt.Sprintf("%s/.local/airconhelp.txt", os.Getenv("HOME"))
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return true
+		return false
 	}
 
-	return false
+	return true
 }
 
 func MoveHelpFile() {
-	if doesFileExist() {
+	if !fileExistis() {
 		src := "./helptext.txt"
 		dest := fmt.Sprintf("%s/.local/airconhelp.txt", os.Getenv("HOME"))
 
