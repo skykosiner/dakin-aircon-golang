@@ -1,6 +1,5 @@
 package main
 
-// Test
 import (
 	"fmt"
 	"log"
