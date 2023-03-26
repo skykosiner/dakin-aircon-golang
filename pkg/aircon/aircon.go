@@ -6,22 +6,26 @@ import (
 	"github.com/skykosiner/aircon-control/pkg/utils"
 )
 
+var mainAirconIp = utils.ReadConfig().MainIp
+var conflictAirconOne = utils.ReadConfig().ConflictAirconOne
+var conflictAirconTwo = utils.ReadConfig().ConflictAirconTwo
+
 func Toggle(state bool) {
 	onOrOff := map[bool]string{
 		true:  "1",
 		false: "0",
 	}
 
-	currentState := utils.CurrentStatus("10.0.0.24")
-	utils.SendRequest("10.0.0.24", onOrOff[state],
+	currentState := utils.CurrentStatus(mainAirconIp)
+	utils.SendRequest(mainAirconIp, onOrOff[state],
 		utils.MapValuesOfState(currentState.Mode),
 		currentState.Temp,
 		utils.MapValuesOfState(currentState.FanSpeed))
 }
 
 func SetTemp(temp string) {
-	currentState := utils.CurrentStatus("10.0.0.24")
-	utils.SendRequest("10.0.0.24", "1",
+	currentState := utils.CurrentStatus(mainAirconIp)
+	utils.SendRequest(mainAirconIp, "1",
 		utils.MapValuesOfState(currentState.Mode), temp,
 		utils.MapValuesOfState(currentState.FanSpeed))
 }
@@ -32,8 +36,8 @@ func SetHotOrCool(cool bool) {
 		false: "4",
 	}
 
-	currentState := utils.CurrentStatus("10.0.0.24")
-	utils.SendRequest("10.0.0.24", "1", hotOrCold[cool],
+	currentState := utils.CurrentStatus(mainAirconIp)
+	utils.SendRequest(mainAirconIp, "1", hotOrCold[cool],
 		currentState.Temp,
 		utils.MapValuesOfState(currentState.FanSpeed))
 }
@@ -50,24 +54,24 @@ func SetFanRate(rate string) {
 		"5":     "7",
 	}
 
-	currentState := utils.CurrentStatus("10.0.0.24")
-	utils.SendRequest("10.0.0.24", "1",
+	currentState := utils.CurrentStatus(mainAirconIp)
+	utils.SendRequest(mainAirconIp, "1",
 		utils.MapValuesOfState(currentState.Mode),
 		currentState.Temp, fanSpeed[rate])
 }
 
 func FixConflict() {
-	currentStateKitchen := utils.CurrentStatus("10.0.0.72")
-	currentStateRoom := utils.CurrentStatus("10.0.0.24")
+	currentStateKitchen := utils.CurrentStatus(conflictAirconOne)
+	currentStateRoom := utils.CurrentStatus(mainAirconIp)
 
 	if currentStateKitchen.Power == "On" && currentStateKitchen.Mode != currentStateRoom.Mode {
-		utils.SendRequest("10.0.0.72", "0",
+		utils.SendRequest(conflictAirconOne, "0",
 			utils.MapValuesOfState(currentStateKitchen.Mode),
 			currentStateKitchen.Temp,
 			utils.MapValuesOfState(currentStateKitchen.FanSpeed))
 
 		// Set the other aircon downstairs to the same as the one that conflicts with mine
-		utils.SendRequest("10.0.0.54", "1",
+		utils.SendRequest(conflictAirconTwo, "1",
 			utils.MapValuesOfState(currentStateKitchen.Mode),
 			currentStateKitchen.Temp,
 			utils.MapValuesOfState(currentStateKitchen.FanSpeed))

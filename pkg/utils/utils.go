@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -15,6 +16,12 @@ type StatusStruct struct {
 	Power    string
 	F_dir    string
 	Shum     string
+}
+
+type Conf struct {
+	MainIp string
+	ConflictAirconOne string
+	ConflictAirconTwo string
 }
 
 func SendRequest(airconIp string, power string, mode string, temp string, fanRate string) {
@@ -105,4 +112,35 @@ func MapValuesOfState(item string) string {
 	}
 
 	return mapValues[item]
+}
+
+func ReadConfig() Conf {
+	var conf Conf
+	homePath := os.Getenv("HOME")
+	bytes, err := os.ReadFile(fmt.Sprintf("%s/.config/aircon/airconrc", homePath))
+
+	if err != nil {
+		log.Fatal("Please make sure you have a config file setup. Read the README for more detial")
+	}
+
+	strArr := strings.Split(string(bytes), "\n")
+
+	for _, str := range strArr {
+		value := strings.Split(str, "=")
+
+		if value[0] == "" {
+			break
+		}
+
+		switch value[0] {
+		case "mainIp":
+			conf.MainIp = value[1]
+		case "conflictAirconOne":
+			conf.ConflictAirconOne = value[1]
+		case "conflictAirconTwo":
+			conf.ConflictAirconTwo = value[1]
+		}
+	}
+
+	return conf
 }

@@ -14,10 +14,11 @@ import (
 
 func main() {
 	cmdArgs := os.Args[1:]
+	mainAirconIp := utils.ReadConfig().MainIp
 
 	switch cmdArgs[0] {
 	case "toggle":
-		if utils.CurrentStatus("10.0.0.24").Power == "On" {
+		if utils.CurrentStatus(mainAirconIp).Power == "On" {
 			aircon.Toggle(false)
 		} else {
 			aircon.Toggle(true)
@@ -36,7 +37,7 @@ func main() {
 		}
 
 		if strings.TrimSuffix(string(stdOout), "\n") == "The Kosiner's wifi" {
-			fmt.Println(utils.CurrentStatus("10.0.0.24"))
+			fmt.Println(utils.CurrentStatus(mainAirconIp))
 		} else {
 			fmt.Println("Not connected to correct wifi")
 		}
