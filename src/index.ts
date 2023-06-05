@@ -1,7 +1,12 @@
 import { spawn } from "child_process";
 import { getCurrentStatus, setFanRate, setHotOrCool, setTemp, toggleAircon } from "./aircon";
+import { setupHelp } from "./help";
+import fs from "fs";
+import { GetConfig as getConfig } from "./config";
 
 async function main() {
+    const config = getConfig();
+    console.log(config);
     const state = getCurrentStatus("10.0.0.10");
     const currState = await state;
     // Take in input from stdin
@@ -20,6 +25,19 @@ async function main() {
             break;
         case "hot":
             setHotOrCool("10.0.0.10", false);
+            break;
+        case "setupHelp":
+            setupHelp();
+            break;
+        case "help":
+            fs.readFile(`${process.env.HOME}/.local/airconhelp.txt`, (err, buffer) => {
+                if (err) {
+                    console.log("COCK IN MY ASS", err);
+                    return
+                }
+
+                console.log(buffer.toString());
+            });
             break;
         case "status":
             // If not connected to the correct wifi don't show the status
