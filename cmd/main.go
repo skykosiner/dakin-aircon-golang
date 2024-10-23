@@ -28,7 +28,7 @@ func main() {
 		aircon.SetHotOrCool(true)
 	case "status":
 		curr := utils.CurrentStatus(mainAirconIp)
-		fmt.Printf("%s %s %s %s\n", curr.Temp, curr.Mode, curr.F_dir, curr.Power)
+		fmt.Printf("%s %s %s %s\n", curr.Temp, curr.Mode, curr.FanSpeed, curr.Power)
 	case "conflict":
 		aircon.FixConflict()
 	case "setupHelp":
