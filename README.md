@@ -7,17 +7,19 @@ This allows me to change all the most changed settings about my air con
 straight from my terminal.
 
 # Setup
-You need to create the config file ~/.config/aircon/airconrc. In this file you
+You need to create the config file ~/.config/aircon/aircon.json. In this file you
 need to add the ip of the main aircon you wish control, and the aircon ip of
 the aircon that conflict with yours and the aircon you went to toggle into that
 state if so. If you don't have this porblem or don't want this feature you can
 just remove the code looking for that before you build. (All of that can be found in `utils.go`).
 
 Aircon config file:
-```
-mainIp=10.0.0.6
-conflictAirconOne=10.0.0.11
-conflictAirconTwo=10.0.0.8
+```json
+{
+    "mainIp": "10.0.0.14",
+    "conflictAirconOne": "10.0.0.9",
+    "conflictAirconTwo": "10.0.0.17"
+}
 ```
 ## Build
 To build all you need to do is run the build script in the root of the project.
@@ -27,7 +29,7 @@ You might want to make change the path from ~/.local/bin/aircon-stuff/aircon to
 Also make sure that ~/.local/bin is added to the path of whatever shell you use.
 
 # Usage
-```
+```bash
 # Toggle between on and off
 aircon toggle
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/skykosiner/aircon-control/pkg/aircon"
@@ -28,19 +27,8 @@ func main() {
 	case "cold":
 		aircon.SetHotOrCool(true)
 	case "status":
-		// Make sure connocted to the same wifi as the aircon
-		networkName := exec.Command("iwgetid", "-r")
-		stdOout, err := networkName.Output()
-
-		if err != nil {
-			log.Fatal("Error getting network name")
-		}
-
-		if strings.TrimSuffix(string(stdOout), "\n") == "The Kosiner's wifi" {
-			fmt.Println(utils.CurrentStatus(mainAirconIp))
-		} else {
-			fmt.Println("Not connected to correct wifi")
-		}
+		curr := utils.CurrentStatus(mainAirconIp)
+		fmt.Printf("%s %s %s %s\n", curr.Temp, curr.Mode, curr.F_dir, curr.Power)
 	case "conflict":
 		aircon.FixConflict()
 	case "setupHelp":

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -19,9 +20,9 @@ type StatusStruct struct {
 }
 
 type Conf struct {
-	MainIp string
-	ConflictAirconOne string
-	ConflictAirconTwo string
+	MainIp            string `json:"mainIp"`
+	ConflictAirconOne string `json:"conflictAirconOne"`
+	ConflictAirconTwo string `json:"conflictAirconTwo"`
 }
 
 func SendRequest(airconIp string, power string, mode string, temp string, fanRate string) {
@@ -116,30 +117,17 @@ func MapValuesOfState(item string) string {
 
 func ReadConfig() Conf {
 	var conf Conf
-	homePath := os.Getenv("HOME")
-	bytes, err := os.ReadFile(fmt.Sprintf("%s/.config/aircon/airconrc", homePath))
+	filePath := fmt.Sprintf("%s/.config/aircon/aircon.json", os.Getenv("HOME"))
+	bytes, err := ioutil.ReadFile(filePath)
 
 	if err != nil {
-		log.Fatal("Please make sure you have a config file setup. Read the README for more detial")
+		log.Fatal("Error reading file")
 	}
 
-	strArr := strings.Split(string(bytes), "\n")
+	err = json.Unmarshal(bytes, &conf)
 
-	for _, str := range strArr {
-		value := strings.Split(str, "=")
-
-		if value[0] == "" {
-			break
-		}
-
-		switch value[0] {
-		case "mainIp":
-			conf.MainIp = value[1]
-		case "conflictAirconOne":
-			conf.ConflictAirconOne = value[1]
-		case "conflictAirconTwo":
-			conf.ConflictAirconTwo = value[1]
-		}
+	if err != nil {
+		log.Fatal("There was an error unmarshling the json")
 	}
 
 	return conf

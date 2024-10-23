@@ -17,6 +17,7 @@ func doesFileExist() bool {
 }
 
 func MoveHelpFile() {
+	// If the help file does not exist create the help file in the correct location
 	if !doesFileExist() {
 		src := "./helptext.txt"
 		dest := fmt.Sprintf("%s/.local/airconhelp.txt", os.Getenv("HOME"))

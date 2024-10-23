@@ -7,4 +7,4 @@ then
 fi
 
 # Setup help text file, build the app, and then move the executable to the users local bin
-go run ./cmd/main.go setupHelp && go build -o aircon ./cmd/main.go && cp aircon ~/.local/bin/aircon-stuff/aircon
+go run ./cmd/main.go setupHelp && go build -o aircon ./cmd/main.go && cp aircon ~/.local/bin/aircon
