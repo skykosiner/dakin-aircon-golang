@@ -1,13 +1,9 @@
 package utils
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
-	"strings"
 )
 
 type StatusStruct struct {
@@ -33,68 +29,6 @@ func SendRequest(airconIp string, power string, mode string, temp string, fanRat
 	}
 }
 
-func getCurrentStatus(airconIp string) []string {
-	url := fmt.Sprintf("http://%s/aircon/get_control_info", airconIp)
-	resp, err := http.Get(url)
-
-	if err != nil {
-		log.Fatal("Error getting current aircon status", err)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-
-	if err != nil {
-		log.Fatalln("Error converting statsu response to string", err)
-	}
-
-	sb := string(body)
-	return strings.Split(sb, ",")
-}
-
-func CurrentStatus(airconIp string) StatusStruct {
-	var status StatusStruct
-
-	modeMap := map[string]string{
-		"3": "Cold",
-		"4": "Heat",
-	}
-
-	powerMap := map[string]string{
-		"1": "On",
-		"0": "Off",
-	}
-
-	fanMap := map[string]string{
-		"B": "Night",
-		"3": "1",
-		"4": "2",
-		"5": "3",
-		"6": "4",
-		"7": "5",
-	}
-
-	for _, value := range getCurrentStatus(airconIp) {
-		parts := strings.Split(value, "=")
-
-		switch parts[0] {
-		case "stemp":
-			status.Temp = parts[1]
-		case "mode":
-			status.Mode = modeMap[parts[1]]
-		case "pow":
-			status.Power = powerMap[parts[1]]
-		case "f_rate":
-			status.FanSpeed = fanMap[parts[1]]
-		case "f_dir":
-			status.F_dir = parts[1]
-		case "shum":
-			status.Shum = parts[1]
-		}
-	}
-
-	return status
-}
-
 func MapValuesOfState(item string) string {
 	mapValues := map[string]string{
 		// Modes
@@ -115,20 +49,6 @@ func MapValuesOfState(item string) string {
 	return mapValues[item]
 }
 
-func ReadConfig() Conf {
-	var conf Conf
-	filePath := fmt.Sprintf("%s/.config/aircon/aircon.json", os.Getenv("HOME"))
-	bytes, err := ioutil.ReadFile(filePath)
-
-	if err != nil {
-		log.Fatal("Error reading file")
-	}
-
-	err = json.Unmarshal(bytes, &conf)
-
-	if err != nil {
-		log.Fatal("There was an error unmarshling the json")
-	}
-
-	return conf
+func PowerToBool(power string) bool {
+	return power == "On"
 }
