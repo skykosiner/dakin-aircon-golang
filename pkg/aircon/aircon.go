@@ -129,3 +129,26 @@ func (a *Aircon) SendRequest() {
 		slog.Error("Erorr sending request to aircon", "error", err)
 	}
 }
+
+func (a *Aircon) StatusForUser() string {
+	modeMap := map[string]string{
+		"3": "Cold",
+		"4": "Heat",
+	}
+
+	powerMap := map[string]string{
+		"1": "On",
+		"0": "Off",
+	}
+
+	fanMap := map[string]string{
+		"B": "Night",
+		"3": "1",
+		"4": "2",
+		"5": "3",
+		"6": "4",
+		"7": "5",
+	}
+
+	return fmt.Sprintf("%s %s %s %s", a.Status.Temp, modeMap[a.Status.Mode], fanMap[a.Status.Fan], powerMap[a.Status.Power])
+}

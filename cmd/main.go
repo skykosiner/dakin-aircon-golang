@@ -20,7 +20,7 @@ func main() {
 	}
 
 	aircon := a.NewAircon(config.AirconIP, verbose)
-	power := flag.Bool("power", utils.PowerToBool(aircon.Status.Power), "Toggle the power state of the air con")
+	power := flag.Bool("power", utils.PowerToBool(aircon.Status.Power), "Set the power state of the air con")
 	mode := flag.String("mode", aircon.Status.Mode, "Air con hot or cold")
 	temp := flag.String("temp", aircon.Status.Temp, "Set the temperature of the air con")
 	fan := flag.String("fan", aircon.Status.Fan, "Set the fan mode of the air con")
@@ -28,4 +28,5 @@ func main() {
 	flag.Parse()
 	aircon.SetStates(*power, *mode, *temp, *fan)
 	aircon.SendRequest()
+	fmt.Println(aircon.StatusForUser())
 }
