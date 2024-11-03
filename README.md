@@ -7,49 +7,46 @@ This allows me to change all the most changed settings about my air con
 straight from my terminal.
 
 # Setup
-You need to create the config file ~/.config/aircon/aircon.json. In this file you
-need to add the ip of the main aircon you wish control, and the aircon ip of
-the aircon that conflict with yours and the aircon you went to toggle into that
-state if so. If you don't have this porblem or don't want this feature you can
-just remove the code looking for that before you build. (All of that can be found in `utils.go`).
-
+You need to create a config file at `~/.config/aircon/aircon.json`. In this file you
+need to add the ip of the air con you wish control. You can extend the code to
+work with more then one units if you want, I'm more then happy to accept the PR
+:).
 Aircon config file:
 ```json
 {
-    "mainIp": "10.0.0.14",
-    "conflictAirconOne": "10.0.0.9",
-    "conflictAirconTwo": "10.0.0.17"
+    "aircon_ip": "10.0.0.5"
 }
 ```
 ## Build
 To build all you need to do is run the build script in the root of the project.
-You might want to make change the path from ~/.local/bin/aircon-stuff/aircon to
-~/.local/bin/aircon.
-
-Also make sure that ~/.local/bin is added to the path of whatever shell you use.
+This will build the project and put it at your `~/.local/bin`. Make sure that
+`~/.local/bin` is added to your PATH.
 
 # Usage
 ```bash
-# Toggle between on and off
-aircon toggle
+# Running zero args will not change anything and just output the current aircon state
+air con
+23.0 Cold Night Off
 
-# To change the temputer
-aircon (any number between 18 - 30)
+# Change the power of the air con
+aircon -power=true
+aircon -power=false
 
-# To change the current fan speed
-aircon fan-(night or level 1 - 5)
+# Change between modes on the air con
+aircon -mode=Heat
+aircon -mode=Cold
 
-# To get the current status of the aircon
-aircon status
+# Set the temperature to what you desrise
+aircon -temp=28
 
-# To set hot or cold
-aircon (hot or cold)
+# Set to any of the fan modes listed below
+# 1,2,3,4,5,Night
+aircon -fan=Night
 
-# Sometimes you'll have an aircon that can cause a conflict with the aircon you
-# want to contcrol. If you run aircon conflict it will turn off that aircon so
-# that your aircon turn on. You need to make sure to change the ip address of
-# the aircon in the conflict function before Compiling
-
-# If you need help or forget the commands you can always run
-aircon help
+# You can also combine to set things at once such as:
+aircon -fan=2 -mode=Cold -power=true -temp18
 ```
+
+You can also check out [`scripts/control`](/scripts/control), to
+give you some examples on how you can write your own scripts for
+the air con.
