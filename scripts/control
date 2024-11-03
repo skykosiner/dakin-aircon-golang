@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+aircon="$HOME/.local/bin/aircon "
+
+case "$1" in
+    "-toggle")
+        currentState=$(aircon | cut -d' ' -f4)
+
+        if [[ $currentState == "On" ]]; then
+            aircon -power=false
+        else
+            aircon -power=true
+        fi
+    ;;
+    "-set-temp")
+        tempNum=$(fuzzel --dmenu -p "Enter Temp >")
+        aircon -temp=$tempNum
+    ;;
+
+    "-set-fan")
+        fanMode=$(printf "Night\n1\n2\n3\n4\n5" | fuzzel --dmenu -p "Select Fan Mode")
+        aircon -fan=$fanMode
+    ;;
+esac
