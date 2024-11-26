@@ -6,7 +6,6 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -15,6 +14,14 @@ type Status struct {
 	Mode  string
 	Fan   string
 	Power string
+}
+
+func (s Status) isStatus() bool {
+	if s.Temp == "" && s.Mode == "" && s.Fan == "" && s.Power == "" {
+		return false
+	}
+
+	return true
 }
 
 type Aircon struct {
@@ -28,8 +35,6 @@ func NewAircon(ip string, verbose bool) Aircon {
 		if verbose {
 			slog.Error("Eror fetching aircon status", "error", err)
 		}
-		fmt.Println("No Status...")
-		os.Exit(0)
 	}
 
 	return Aircon{
@@ -131,24 +136,9 @@ func (a *Aircon) SendRequest() {
 }
 
 func (a *Aircon) StatusForUser() string {
-	modeMap := map[string]string{
-		"3": "Cold",
-		"4": "Heat",
+	if !a.Status.isStatus() {
+		return "No Status..."
 	}
 
-	powerMap := map[string]string{
-		"1": "On",
-		"0": "Off",
-	}
-
-	fanMap := map[string]string{
-		"B": "Night",
-		"3": "1",
-		"4": "2",
-		"5": "3",
-		"6": "4",
-		"7": "5",
-	}
-
-	return fmt.Sprintf("%s %s %s %s", a.Status.Temp, modeMap[a.Status.Mode], fanMap[a.Status.Fan], powerMap[a.Status.Power])
+	return fmt.Sprintf("%s %s %s %s", a.Status.Temp, a.Status.Mode, a.Status.Fan, a.Status.Power)
 }
