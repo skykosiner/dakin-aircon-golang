@@ -33,12 +33,12 @@ func main() {
 	var verbose bool
 	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "Have verbose outputs or not.")
 
-	aircon := a.NewAircon(config.AirconIP, verbose)
 	commands := []cobra.Command{
 		{
 			Use:   "status",
 			Short: "Get the current statuso of the air con",
 			Run: func(cmd *cobra.Command, args []string) {
+				aircon := a.NewAircon(config.AirconIP, verbose)
 				fmt.Println(aircon.StatusForUser())
 			},
 		},
@@ -46,6 +46,7 @@ func main() {
 			Use:   "toggle",
 			Short: "Toggle the power for the air con",
 			Run: func(cmd *cobra.Command, args []string) {
+				aircon := a.NewAircon(config.AirconIP, verbose)
 				power := !utils.PowerToBool(aircon.Status.Power)
 				aircon.SetStates(power, aircon.Status.Mode, aircon.Status.Temp, aircon.Status.Fan)
 				aircon.SendRequest()
@@ -55,6 +56,7 @@ func main() {
 			Use:   "mode",
 			Short: "Toggle the pwore for the aircon",
 			Run: func(cmd *cobra.Command, args []string) {
+				aircon := a.NewAircon(config.AirconIP, verbose)
 				validArgs := []string{"Cold", "Heat"}
 
 				if len(args) == 0 {
@@ -71,6 +73,7 @@ func main() {
 			Use:   "temp",
 			Short: "Set the temperature for the aircon",
 			Run: func(cmd *cobra.Command, args []string) {
+				aircon := a.NewAircon(config.AirconIP, verbose)
 				validArgs := []string{
 					"18",
 					"18.5",
