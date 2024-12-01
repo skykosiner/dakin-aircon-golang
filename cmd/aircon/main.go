@@ -70,6 +70,23 @@ func main() {
 			},
 		},
 		{
+			Use:   "fan",
+			Short: "Set the fan mode.",
+			Run: func(cmd *cobra.Command, args []string) {
+				aircon := a.NewAircon(config.AirconIP, verbose)
+				validArgs := []string{"Night", "1", "2", "3", "4", "5"}
+
+				if len(args) == 0 {
+					fmt.Fprintln(os.Stderr, "Please enter a valid arg.")
+					printValidArgs(validArgs, os.Stderr)
+					return
+				}
+
+				aircon.SetStates(utils.PowerToBool(aircon.Status.Power), aircon.Status.Mode, aircon.Status.Temp, args[0])
+				aircon.SendRequest()
+			},
+		},
+		{
 			Use:   "temp",
 			Short: "Set the temperature for the aircon",
 			Run: func(cmd *cobra.Command, args []string) {
@@ -110,7 +127,7 @@ func main() {
 					return
 				}
 
-				aircon.SetStates(utils.PowerToBool(aircon.Status.Power), aircon.Status.Mode, aircon.Status.Temp, args[0])
+				aircon.SetStates(utils.PowerToBool(aircon.Status.Power), aircon.Status.Mode, args[0], aircon.Status.Fan)
 				aircon.SendRequest()
 			},
 		},
