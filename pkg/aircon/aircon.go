@@ -65,6 +65,7 @@ func currentState(ip string) (Status, error) {
 	modeMap := map[string]string{
 		"3": "Cold",
 		"4": "Heat",
+		"6": "Fan",
 	}
 
 	powerMap := map[string]string{
@@ -73,6 +74,7 @@ func currentState(ip string) (Status, error) {
 	}
 
 	fanMap := map[string]string{
+		"A": "Auto",
 		"B": "Night",
 		"3": "1",
 		"4": "2",
@@ -88,7 +90,11 @@ func currentState(ip string) (Status, error) {
 
 		switch item {
 		case "stemp":
-			status.Temp = value
+			if value == "--" {
+				status.Temp = "No Target"
+			} else {
+				status.Temp = value
+			}
 		case "mode":
 			status.Mode = modeMap[value]
 		case "f_rate":
@@ -122,9 +128,18 @@ func (a *Aircon) SetStates(power bool, mode string, temp string, fan string) {
 	}
 
 	a.Status.Power = powerMap[power]
-	a.Status.Mode = modeMap[mode]
-	a.Status.Temp = temp
-	a.Status.Fan = fanMap[fan]
+	// TODO: there is deffo a better way to do this, but for now this works lol
+	// This is kind of gross, I should really sort this out though...
+	if a.Status.Mode == "Fan" {
+		fmt.Println(a.Status)
+		a.Status.Mode = "3"
+		a.Status.Temp = "18"
+		a.Status.Fan = "B"
+	} else {
+		a.Status.Mode = modeMap[mode]
+		a.Status.Temp = temp
+		a.Status.Fan = fanMap[fan]
+	}
 }
 
 func (a *Aircon) SendRequest() {
